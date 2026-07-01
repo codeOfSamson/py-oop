@@ -22,8 +22,9 @@ class WeatherFetcher:
     @property
     def raw_data(self)-> dict:
         if self._data is None:
-            response = rq.get(self.url)
-            self._data = response.json()
+            response = rq.get(self.url)      
+            self._data = response.json()['data_1h']
+            print(123, self._data)
         return self._data
         
     @property
@@ -41,6 +42,10 @@ class DataStorage:
     def create_dataframe(self, data:list)->pd.DataFrame:
         return pd.DataFrame(data)
 
+    def write_dataframe_to_file(self, dataframe: pd.DataFrame, count: int) -> None:
+        filename = f"{self.name_prefix}_{count}.csv"
+        dataframe.to_csv(filename)
+
 
 #############
 
@@ -51,11 +56,13 @@ class WeatherScheduler:
         self.schedule.cyclic(dt.timedelta(seconds=seconds), self.orchestrate)
         self.weather_instance = WeatherFetcher(*weather_details)
         self.data_storage = DataStorage(WeatherScheduler.name_prefix)
+        self.count = 1
 
     def orchestrate(self):
         data = self.weather_instance.raw_data
         data_frames = self.data_storage.create_dataframe(data)
-        print(data_frames)
+        self.data_storage.write_dataframe_to_file(data_frames, self.count)
+        self.count += 1
 
     def run(self):
         while True:
