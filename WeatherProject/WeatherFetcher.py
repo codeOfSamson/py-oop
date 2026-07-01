@@ -1,5 +1,7 @@
 import os
 import requests as rq
+from pprint import pprint
+from parser import parse_forecast
 
 
 class WeatherFetcher:
@@ -20,9 +22,10 @@ class WeatherFetcher:
             self._data = response.json()
             return self._data
         
-    # @property
-    # def cleaned_data(self) -> list:
-    #     if self.raw_data
+    @property
+    def cleaned_data(self) -> list:
+        if self.raw_data:
+            self.cleaned_data = parse_forecast(self.raw_data)
           
 
 
@@ -30,4 +33,4 @@ api_key = os.getenv("api_key")
 
 url= "https://my.meteoblue.com/packages/basic-1h,basic-3h,basic-day?lat=48&lon=8&tz=UTC&apikey=YOUR_APIKEY"
 weather_instance = WeatherFetcher(url, "ntqbypuLOiFgVCA4")
-print(weather_instance.raw_data)
+pprint(weather_instance.cleaned_data)
