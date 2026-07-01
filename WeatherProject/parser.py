@@ -2,6 +2,7 @@ from datetime import datetime
 from models import Forecast, HourlyWeather
 
 def parse_forecast(data: dict) -> Forecast:
+    print('from parser', data)
     meta = data["metadata"]
     h = data["data_1h"]
 
